@@ -343,6 +343,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "chat-xdk-php"
+version = "0.4.1"
+dependencies = [
+ "base64 0.22.1",
+ "cbindgen",
+ "chat-xdk-core",
+ "serde",
+ "serde_json",
+ "tokio",
+ "zeroize",
+]
+
+[[package]]
 name = "chat-xdk-python"
 version = "0.4.1"
 dependencies = [

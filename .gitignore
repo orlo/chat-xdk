@@ -29,3 +29,6 @@ docs/internal/
 
 # Multi-arch natives staged at pack/release time (not committed)
 crates/jvm/java/chatxdk/src/main/resources/native/
+
+# PHP FFI build
+php/

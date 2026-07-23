@@ -7,6 +7,7 @@ members = [
     "crates/wasm",
     "crates/go",
     "crates/dotnet",
+    "crates/php"
 ]
 
 [workspace.package]

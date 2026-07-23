@@ -1,7 +1,7 @@
 # chat-xdk Makefile
 # Run `make help` for available targets
 
-.PHONY: all build release test test-verbose check clean codegen fmt fmt-check lint doc help test-sdks test-js test-py go-lib prebuilt prebuilt-linux-amd64 prebuilt-linux-amd64-musl prebuilt-all test-go dotnet-build dotnet-test jvm-test versions set-version wheel wheel-dev wasm wasm-node wasm-bundler ci
+.PHONY: all build release test test-verbose check clean codegen fmt fmt-check lint doc help test-sdks test-js test-py go-lib prebuilt prebuilt-linux-amd64 prebuilt-linux-amd64-musl prebuilt-all test-go dotnet-build dotnet-test jvm-test versions set-version wheel wheel-dev wasm wasm-node wasm-bundler ci php-ffi
 
 # Detect host platform for prebuilt target
 HOST_OS   := $(shell go env GOOS 2>/dev/null)
@@ -169,6 +169,7 @@ doc:
 clean:
 	cargo clean
 	rm -rf .thrift-compiler
+	rm -rf php
 
 # Build .NET native library (cdylib)
 dotnet-build:
@@ -190,6 +191,14 @@ dotnet-test: dotnet-build
 	mkdir -p "$$TEST_DIR" && \
 	cp "$$NATIVE_LIB" "$$TEST_DIR/" && \
 	dotnet test "$$TEST_PROJ" --no-build
+
+# Build and stage the native shared library for PHP FFI.
+php-ffi:
+	cargo build -p chat-xdk-php --release
+	@NATIVE_LIB=$$(ls target/release/libchat_xdk_php.dylib target/release/libchat_xdk_php.so target/release/chat_xdk_php.dll 2>/dev/null | head -1); \
+	[ -n "$$NATIVE_LIB" ] || { echo "Error: native library not found in target/release"; exit 1; }; \
+	cp "$$NATIVE_LIB" php/; \
+	echo "Staged $$NATIVE_LIB under php/"
 
 # Build Python wheel
 wheel:
@@ -263,6 +272,7 @@ help:
 	@echo "  make dotnet-build - Build .NET native library (cdylib)"
 	@echo "  make dotnet-test  - Build .NET library and run C# tests"
 	@echo "  make jvm-test     - Build cdylib + run JVM (JNA) tests (JDK 17+, Maven)"
+	@echo "  make php-ffi      - Build and stage native shared library for PHP FFI"
 	@echo ""
 	@echo "  make ci           - Run full CI checks"
 	@echo "  make help         - Show this help"
